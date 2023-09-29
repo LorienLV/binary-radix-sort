@@ -11,13 +11,13 @@
  */
 
 /**
- * BitSort recursive implementation.
+ * Binary Radix Sort recursive implementation.
  * 
  * @param v Vector to sort.
  */
 template <typename T>
-void bit_sort_rec(std::vector<T> &v) {
-    std::function<void(std::span<T>, int)> bit_sort_rec_inm =
+void bin_radix_sort_rec(std::vector<T> &v) {
+    std::function<void(std::span<T>, int)> bin_radix_sort_rec_inm =
         [&](std::span<T> vview, const int bit) {
             if (vview.size() <= 1 || bit < 0) {
                 return;
@@ -41,20 +41,20 @@ void bit_sort_rec(std::vector<T> &v) {
                 }
             }
 
-            bit_sort_rec_inm(vview.subspan(0, left), bit - 1);
-            bit_sort_rec_inm(vview.subspan(left), bit - 1);
+            bin_radix_sort_rec_inm(vview.subspan(0, left), bit - 1);
+            bin_radix_sort_rec_inm(vview.subspan(left), bit - 1);
         };
 
-    bit_sort_rec_inm(std::span{v}, sizeof(T) * 8 - 1);
+    bin_radix_sort_rec_inm(std::span{v}, sizeof(T) * 8 - 1);
 }
 
 /**
- * BitSort iterative implementation.
+ * Binary Radix Sort iterative implementation.
  * 
  * @param v Vector to sort.
  */
 template <typename T>
-void bit_sort_it(std::vector<T> &v) {
+void bin_radix_sort_it(std::vector<T> &v) {
     // Save some instructions by using an array instead of a vector + push_back,
     // pop_back (stack).
     std::vector<std::tuple<int, int, int>> stack(v.size());
@@ -120,7 +120,7 @@ static bool equal_vectors(const std::vector<T> &v1,
 }
 
 /**
- * Benchmark the bit-sort algorithm for a given data type.
+ * Benchmark the Binary Radix Sort algorithm for a given data type.
  * 
  * @param reps Number of repetitions.
  * @param size Size of the vector to sort.
@@ -132,8 +132,8 @@ void benchmark(const int reps, const int size, const std::string &type_name) {
               << "\n";
 
     auto std_sort_time = std::chrono::nanoseconds::zero();
-    auto bit_sort_rec_time = std::chrono::nanoseconds::zero();
-    auto bit_sort_it_time = std::chrono::nanoseconds::zero();
+    auto bin_radix_sort_rec_time = std::chrono::nanoseconds::zero();
+    auto bin_radix_sort_it_time = std::chrono::nanoseconds::zero();
 
     for (int r = 0; r < reps; ++r) {
         std::vector<T> v1(size);
@@ -149,26 +149,26 @@ void benchmark(const int reps, const int size, const std::string &type_name) {
         auto end = std::chrono::high_resolution_clock::now();
         std_sort_time += end - start;
 
-        // Bit sort.
+        // Binary Radix Sort.
         start = std::chrono::high_resolution_clock::now();
-        bit_sort_rec(v2);
+        bin_radix_sort_rec(v2);
         end = std::chrono::high_resolution_clock::now();
-        bit_sort_rec_time += end - start;
+        bin_radix_sort_rec_time += end - start;
 
-        // Bit sort iterative.
+        // Binary Radix Sort.
         start = std::chrono::high_resolution_clock::now();
-        bit_sort_it(v3);
+        bin_radix_sort_it(v3);
         end = std::chrono::high_resolution_clock::now();
-        bit_sort_it_time += end - start;
+        bin_radix_sort_it_time += end - start;
 
         equal_vectors(v1, v2, std::string("(std_sort_rec)"));
         equal_vectors(v1, v3, std::string("(std_sort_rec)"));
     }
 
     std::cout << "    std_sort_time (s): " << std_sort_time.count() / 1e9 << "\n";
-    std::cout << "    bit_sort_rec_time (s): " << bit_sort_rec_time.count() / 1e9
+    std::cout << "    bin_radix_sort_rec_time (s): " << bin_radix_sort_rec_time.count() / 1e9
               << "\n";
-    std::cout << "    bit_sort_it_time (s): " << bit_sort_it_time.count() / 1e9
+    std::cout << "    bin_radix_sort_it_time (s): " << bin_radix_sort_it_time.count() / 1e9
               << "\n";
 }
 
